@@ -2,7 +2,7 @@
 
 # Configurações
 URL="http://192.168.1.162"  # Seu IP ou URL
-LOGFILE="site_status.log"
+LOGFILE="/var/log/site_status.log"
 WEBHOOK_URL="" # Colocar URl do discord
 
 while true; do
