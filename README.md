@@ -48,6 +48,8 @@ sudo systemctl stop nginx
 ```
 5. Caso o site esteja fora do ar (resposta diferente de 200), o script envia uma mensagem para o Discord via webhook.
 
+![Mensagem enviada para o discord](images/Screenshot from 2025-04-24 13-49-46.png)
+
 * Por questões de segurança, deixei a URL do webhook vazia. Para funcionar o script, deve ser inserido uma URL válida do webhook.
 
 ```
