@@ -26,13 +26,18 @@ sudo apt install nginx
 
 ```bash
 
-:/var/www/html$ vim index.nginx-debian.html
+vim index.nginx-debian.html
 
 ```
 
 3. Fiz um script em Bash que verifica se o site está respondendo. Dentro desse script está também o pedido para cada verificação ser guardada no arquivo de Log.
 
-* O scrip está na pasta ProjetoLinux no github, com o nome monitor_site.sh
+* O script está na pasta ProjetoLinux no github, com o nome monitor_site.sh
+* Para rodar:
+
+```
+./monitor_site.sh
+```
 
 4. Simulei a queda do site parando o sistema Nginx manualmente através do terminal.
 
