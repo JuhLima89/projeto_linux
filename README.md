@@ -1,57 +1,61 @@
-# DesafioLinux - Monitoramento de Site com Nginx e Notificação no Discord
+# Monitoramento de Disponibilidade de Site com Nginx e Notificação no Discord
 
-Este projeto tem como objetivo monitorar se um site está online, utilizando o servidor Nginx e um script automatizado que verifica a disponibilidade do site a cada minuto. Caso o site esteja fora do ar, uma notificação é enviada automaticamente para um canal no Discord via webhook.
+Este é um script Bash que monitora a disponibilidade de um site e envia alertas no Discord em caso de falha. O script realiza verificações a cada minuto, reinicia o Nginx automaticamente se o site ficar fora do ar, e registra eventos em um arquivo de log.
 
-## O que foi pedido:
+## Funcionalidades
 
-- Instalação e configuração do Nginx
-- Script de monitoramento (cron job a cada 1 minuto)
-- Simulação de queda do site parando o sistema através do terminal
-- Notificação automática para o Discord com webhook
-- Manter um arquivo de Log com os testes
+- Monitora a disponibilidade de um site.
+- Envia uma notificação no Discord se o site estiver fora do ar.
+- Reinicia automaticamente o servidor Nginx se o site ficar offline.
+- Registra os eventos no arquivo de log (`/var/log/site_status.log`).
+- Garante que o Nginx seja iniciado automaticamente no boot.
 
-## Como fiz o meu desafio:
+## Requisitos
 
-1. Instalei o nginx na minha máquina, que já é linux, para abrir um site local.
+- Sistema operacional baseado em Linux.
+- Nginx instalado e configurado.
+- Acesso ao terminal com permissões de `sudo`.
+- Uma URL de Webhook do Discord para envio das notificações.
+- `curl` instalado para realizar as requisições HTTP.
+
+## Como Usar
+
+1. Clone este repositório ou baixe o script para o seu servidor.
+
+2. Faça o script ser executável:
+    ```bash
+    chmod +x monitor_site.sh
+    ```
+
+3. Configure a URL do site que deseja monitorar:
+    - Abra o arquivo `monitor_site.sh` e edite a variável `URL` com o endereço do site que você quer monitorar.
+
+4. Configure o Webhook do Discord:
+    - Substitua a URL do webhook do Discord na variável `WEBHOOK_URL` com seu link de Webhook.
+
+5. Execute o script:
+    ```bash
+    ./monitor_site.sh
+    ```
+
+6. Para rodar o script automaticamente em segundo plano, você pode configurar um cron job ou usar um serviço systemd.
+
+## Explicação do Script
+
+- **Verificação de Status HTTP**: O script usa o `curl` para verificar o status HTTP do site configurado. Se o site responder com um status HTTP 200 (OK), ele registra a resposta no log como "online". Caso contrário, o script envia uma mensagem de alerta ao Discord e tenta reiniciar o serviço Nginx.
+  
+- **Log de Atividades**: Todas as verificações e ações (como tentativas de reinício do Nginx) são registradas no arquivo de log localizado em `/var/log/site_status.log`.
+
+- **Reinício do Nginx**: Caso o site esteja offline, o script tenta reiniciar o Nginx automaticamente e registra o sucesso ou falha dessa operação.
+
+- **Notificação no Discord**: Quando o site está fora do ar, o script envia uma notificação para o canal configurado no Discord.
+
+## Configuração do Nginx
+
+Certifique-se de que o Nginx esteja configurado corretamente e com a opção de inicialização automática no boot:
 
 ```bash
+sudo systemctl enable nginx
 
-sudo apt update
-sudo apt upgrade
-sudo apt install nginx
-
-```   
-
-2. Fiz a edição do site alterando o arquivo index.nginx-debian.html através do vim
-
-```bash
-
-vim index.nginx-debian.html
-
-```
-
-3. Fiz um script em Bash que verifica se o site está respondendo. Dentro desse script está também o pedido para cada verificação ser guardada no arquivo de Log.
-
-* O script está na pasta ProjetoLinux no github, com o nome monitor_site.sh
-* Para rodar:
-
-```
-./monitor_site.sh
-```
-
-4. Simulei a queda do site parando o sistema Nginx manualmente através do terminal.
-
-```bash
-
-sudo systemctl stop nginx
-
-```
-5. Caso o site esteja fora do ar (resposta diferente de 200), o script envia uma mensagem para o Discord via webhook.
-
-* Por questões de segurança, deixei a URL do webhook vazia. Para funcionar o script, deve ser inserido uma URL válida do webhook.
-
-```
-WEBHOOK_URL="" ## Colocar URl do discord
-```
 
 

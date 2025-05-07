@@ -1,28 +1,41 @@
 #!/bin/bash
 
 # Configurações
-URL="http://192.168.1.162"  # Seu IP ou URL
+URL="http://localhost"
 LOGFILE="/var/log/site_status.log"
-WEBHOOK_URL="" # Colocar URl do discord
+WEBHOOK_URL="https://"  #Adicionar URL do Webhook
+STATUS_FILE="/tmp/site_status_last"
 
-while true; do
-    TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
+TIMESTAMP=$(date '+%Y-%m-%d %H:%M:%S')
+HTTP_STATUS=$(curl -k -s -o /dev/null -w "%{http_code}" "$URL")
+STATUS_ANTERIOR=$(cat "$STATUS_FILE" 2>/dev/null || echo "desconhecido")
 
-    # Verifica status HTTP
-    HTTP_STATUS=$(curl -k -s -o /dev/null -w "%{http_code}" "$URL")
+# Garante que o nginx será iniciado automaticamente no boot
+sudo systemctl enable nginx &>/dev/null
 
-    if [ "$HTTP_STATUS" -eq 200 ]; then
-        echo "[$TIMESTAMP] Site $URL está online (HTTP $HTTP_STATUS)." | tee -a "$LOGFILE"
-    else
-        MSG="[$TIMESTAMP] ⚠️ ALERTA: Site $URL está FORA DO AR (HTTP $HTTP_STATUS)."
-        echo "$MSG" | tee -a "$LOGFILE"
+if [ "$HTTP_STATUS" -eq 200 ]; then
+    echo "[$TIMESTAMP] Site $URL está online (HTTP $HTTP_STATUS)." >> "$LOGFILE"
+    echo "online" > "$STATUS_FILE"
+else
+    MSG="[$TIMESTAMP] ⚠️ ALERTA: Site $URL está FORA DO AR (HTTP $HTTP_STATUS)."
+    echo "$MSG" >> "$LOGFILE"
 
-        # Envia notificação para Discord
+    if [ "$STATUS_ANTERIOR" != "offline" ]; then
         curl -H "Content-Type: application/json" \
              -X POST \
              -d "{\"content\": \"$MSG\"}" \
              "$WEBHOOK_URL"
     fi
 
-    sleep 60
-done
+    echo "offline" > "$STATUS_FILE"
+
+    # Tenta reiniciar o nginx
+    echo "[$TIMESTAMP] Tentando reiniciar o Nginx..." >> "$LOGFILE"
+    sudo systemctl restart nginx
+
+    if systemctl is-active --quiet nginx; then
+        echo "[$TIMESTAMP] Nginx reiniciado com sucesso." >> "$LOGFILE"
+    else
+        echo "[$TIMESTAMP] Falha ao reiniciar o Nginx." >> "$LOGFILE"
+    fi
+fi
