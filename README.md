@@ -23,22 +23,12 @@ Este é um script Bash que monitora a disponibilidade de um site e envia alertas
 1. Clone este repositório ou baixe o script para o seu servidor.
 
 2. Faça o script ser executável:
+
     ```bash
     chmod +x monitor_site.sh
     ```
 
-3. Configure a URL do site que deseja monitorar:
-    - Abra o arquivo `monitor_site.sh` e edite a variável `URL` com o endereço do site que você quer monitorar.
-
-4. Configure o Webhook do Discord:
-    - Substitua a URL do webhook do Discord na variável `WEBHOOK_URL` com seu link de Webhook.
-
-5. Execute o script:
-    ```bash
-    ./monitor_site.sh
-    ```
-
-6. Para rodar o script automaticamente em segundo plano, você pode configurar um cron job ou usar um serviço systemd.
+📜 [Clique aqui para ver o script](./monitor_site.sh)
 
 ## Explicação do Script
 
@@ -50,12 +40,32 @@ Este é um script Bash que monitora a disponibilidade de um site e envia alertas
 
 - **Notificação no Discord**: Quando o site está fora do ar, o script envia uma notificação para o canal configurado no Discord.
 
-## Configuração do Nginx
 
-Certifique-se de que o Nginx esteja configurado corretamente e com a opção de inicialização automática no boot:
+3. Configure a URL do site que deseja monitorar:
+    - Abra o arquivo `monitor_site.sh` e edite a variável `URL` com o endereço do site que você quer monitorar.
 
-```bash
-sudo systemctl enable nginx
+4. Configure o Webhook do Discord:
+    - Substitua a URL do webhook do Discord na variável `WEBHOOK_URL` com seu link de Webhook.
+
+5. Execute o script manualmente (para testar):
+
+    ```bash
+    ./monitor_site.sh
+    ```
+
+6. Para rodar o script automaticamente em segundo plano, você pode configurar um cron job ou usar um serviço systemd.
+
+Execute `crontab -e` e adicione a linha:
+
+```cron
+* * * * * /caminho/absoluto/para/monitor.sh
+```
+
+## 📒 Observações
+
+- Certifique-se de que o script tenha permissões para reiniciar o Nginx (pode exigir `sudo` ou ser executado como root).
+- Teste o webhook do Discord antes de usar em produção.
+- O script considera que o site está fora do ar se o código de status HTTP for diferente de `200`.
 
 
 

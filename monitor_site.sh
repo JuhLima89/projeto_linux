@@ -25,6 +25,7 @@ else
              -X POST \
              -d "{\"content\": \"$MSG\"}" \
              "$WEBHOOK_URL"
+
     fi
 
     echo "offline" > "$STATUS_FILE"
@@ -37,5 +38,6 @@ else
         echo "[$TIMESTAMP] Nginx reiniciado com sucesso." >> "$LOGFILE"
     else
         echo "[$TIMESTAMP] Falha ao reiniciar o Nginx." >> "$LOGFILE"
+
     fi
 fi
